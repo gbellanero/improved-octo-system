@@ -1,30 +1,40 @@
 from djongo import models
-from django.contrib.auth.models import AbstractUser
 
-class User(AbstractUser):
-    # Extend as needed
-    pass
+class User(models.Model):
+    _id = models.ObjectIdField()
+    name = models.CharField(max_length=100)
+    email = models.EmailField(unique=True)
+    team = models.CharField(max_length=50)
+    class Meta:
+        db_table = 'users'
 
 class Team(models.Model):
+    _id = models.ObjectIdField()
     name = models.CharField(max_length=100)
-    members = models.ArrayReferenceField(to=User, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
+    members = models.JSONField(default=list)
+    class Meta:
+        db_table = 'teams'
 
 class Activity(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    _id = models.ObjectIdField()
+    user = models.CharField(max_length=100)
     type = models.CharField(max_length=50)
-    duration = models.IntegerField()  # minutes
-    calories = models.IntegerField()
-    timestamp = models.DateTimeField(auto_now_add=True)
-
-class Workout(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-    description = models.TextField()
+    duration = models.IntegerField()
     date = models.DateField()
+    class Meta:
+        db_table = 'activities'
 
 class Leaderboard(models.Model):
-    team = models.ForeignKey(Team, on_delete=models.CASCADE)
-    total_calories = models.IntegerField(default=0)
-    total_duration = models.IntegerField(default=0)
-    updated_at = models.DateTimeField(auto_now=True)
+    _id = models.ObjectIdField()
+    team = models.CharField(max_length=100)
+    points = models.IntegerField()
+    class Meta:
+        db_table = 'leaderboard'
+
+class Workout(models.Model):
+    _id = models.ObjectIdField()
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    difficulty = models.CharField(max_length=50)
+    class Meta:
+        db_table = 'workouts'
