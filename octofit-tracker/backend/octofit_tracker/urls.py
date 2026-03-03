@@ -25,8 +25,19 @@ router.register(r'activities', views.ActivityViewSet)
 router.register(r'leaderboard', views.LeaderboardViewSet)
 router.register(r'workouts', views.WorkoutViewSet)
 
+import os
+
+# Get codespace name from environment variable
+codespace_name = os.environ.get('CODESPACE_NAME', '')
+
+def api_url_prefix():
+    if codespace_name:
+        return f'https://{codespace_name}-8000.app.github.dev/api/'
+    return 'api/'
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
+    path('api/base-url/', lambda request: JsonResponse({"api_base_url": f"https://{codespace_name}-8000.app.github.dev/api/" if codespace_name else "http://localhost:8000/api/"})),
     path('', views.api_root, name='api-root'),
 ]
